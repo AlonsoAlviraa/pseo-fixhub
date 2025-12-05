@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Site{% endblock %}</title>
+    <meta name="description" content="{% block description %}{% endblock %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                primary: '#0f172a', /* Slate 900 */
+                accent: '#38bdf8', /* Sky 400 */
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 fixed w-full z-10 top-0">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="index.html" class="font-bold text-xl text-slate-800 tracking-tight">Fix<span class="text-accent">Hub</span></a>
+            <div class="text-sm text-slate-500">The Automated Repair Knowledge Base</div>
+        </div>
+    </nav>
+
+    <main class="flex-grow pt-24 pb-12 px-4">
+        <div class="max-w-4xl mx-auto">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm">
+        <p>&copy; 2025 FixHub. Automated reliability.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,420 @@
+[
+    {
+        "slug": "error-e4-samsung-washer",
+        "error_code": "E4",
+        "device_brand": "Samsung",
+        "device_type": "Washer",
+        "model_series": "QuickDrive",
+        "fix_steps": [
+            "Unplug the washing machine.",
+            "Check the drain hose for kinks or blockages.",
+            "Clean the drain filter located at the bottom front.",
+            "Restart the cycle."
+        ],
+        "severity": "Low",
+        "estimated_cost": "$0 - $20",
+        "affiliate_link": "https://amazon.com/samsung-drain-hose-replacement?tag=yourtag-20"
+    },
+    {
+        "slug": "error-5e-samsung-washer",
+        "error_code": "5E",
+        "device_brand": "Samsung",
+        "device_type": "Washer",
+        "model_series": "EcoBubble",
+        "fix_steps": [
+            "Turn off the machine immediately.",
+            "Inspect the water supply hose.",
+            "Check if the water pressure is sufficient.",
+            "Reset the sensors."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$50 - $100",
+        "affiliate_link": "https://amazon.com/samsung-water-valve?tag=yourtag-20"
+    },
+    {
+        "slug": "error-ue-lg-washer",
+        "error_code": "UE",
+        "device_brand": "LG",
+        "device_type": "Washer",
+        "model_series": "TurboWash",
+        "fix_steps": [
+            "Stop the cycle and redistribute the load.",
+            "Ensure the machine is on a level surface.",
+            "Check if the load is balanced.",
+            "Restart the spin cycle."
+        ],
+        "severity": "Low",
+        "estimated_cost": "$0 - $10",
+        "affiliate_link": "https://amazon.com/lg-washer-parts?tag=yourtag-20"
+    },
+    {
+        "slug": "error-oe-lg-washer",
+        "error_code": "OE",
+        "device_brand": "LG",
+        "device_type": "Washer",
+        "model_series": "Direct Drive",
+        "fix_steps": [
+            "Check the drain pump for obstructions.",
+            "Clean the drain filter.",
+            "Inspect the drain hose for kinks.",
+            "Test the drain pump motor."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$30 - $80",
+        "affiliate_link": "https://amazon.com/lg-drain-pump?tag=yourtag-20"
+    },
+    {
+        "slug": "error-f1-whirlpool-washer",
+        "error_code": "F1",
+        "device_brand": "Whirlpool",
+        "device_type": "Washer",
+        "model_series": "Cabrio",
+        "fix_steps": [
+            "Unplug the washer for 30 seconds.",
+            "Check the main control board for damage.",
+            "Inspect all wire connections.",
+            "Replace the control board if necessary."
+        ],
+        "severity": "High",
+        "estimated_cost": "$100 - $250",
+        "affiliate_link": "https://amazon.com/whirlpool-control-board?tag=yourtag-20"
+    },
+    {
+        "slug": "error-f5-whirlpool-washer",
+        "error_code": "F5",
+        "device_brand": "Whirlpool",
+        "device_type": "Washer",
+        "model_series": "Duet",
+        "fix_steps": [
+            "Check the door lock mechanism.",
+            "Inspect the door latch for damage.",
+            "Clean the door seal area.",
+            "Replace the door lock assembly if needed."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$40 - $90",
+        "affiliate_link": "https://amazon.com/whirlpool-door-lock?tag=yourtag-20"
+    },
+    {
+        "slug": "error-e3-bosch-dishwasher",
+        "error_code": "E3",
+        "device_brand": "Bosch",
+        "device_type": "Dishwasher",
+        "model_series": "Serie 4",
+        "fix_steps": [
+            "Check the water inlet valve.",
+            "Inspect the water supply line for kinks.",
+            "Clean the inlet filter.",
+            "Test the water pressure."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$35 - $75",
+        "affiliate_link": "https://amazon.com/bosch-inlet-valve?tag=yourtag-20"
+    },
+    {
+        "slug": "error-e15-bosch-dishwasher",
+        "error_code": "E15",
+        "device_brand": "Bosch",
+        "device_type": "Dishwasher",
+        "model_series": "Serie 6",
+        "fix_steps": [
+            "Turn off the dishwasher immediately.",
+            "Check for water in the base pan.",
+            "Remove excess water with a sponge.",
+            "Tilt the dishwasher slightly to drain water.",
+            "Check for leaks in the door seal or hoses."
+        ],
+        "severity": "High",
+        "estimated_cost": "$50 - $150",
+        "affiliate_link": "https://amazon.com/bosch-door-seal?tag=yourtag-20"
+    },
+    {
+        "slug": "error-f9-f1-maytag-washer",
+        "error_code": "F9/F1",
+        "device_brand": "Maytag",
+        "device_type": "Washer",
+        "model_series": "Bravos",
+        "fix_steps": [
+            "Check the drain time exceeded error.",
+            "Inspect the drain pump and filter.",
+            "Clear any blockages in the drain system.",
+            "Test the drain pump motor operation."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$45 - $95",
+        "affiliate_link": "https://amazon.com/maytag-drain-pump?tag=yourtag-20"
+    },
+    {
+        "slug": "error-le-samsung-washer",
+        "error_code": "LE",
+        "device_brand": "Samsung",
+        "device_type": "Washer",
+        "model_series": "AddWash",
+        "fix_steps": [
+            "Check if the load is too heavy or unbalanced.",
+            "Reduce the load size.",
+            "Inspect the motor for issues.",
+            "Check the drive belt for wear."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$60 - $120",
+        "affiliate_link": "https://amazon.com/samsung-drive-motor?tag=yourtag-20"
+    },
+    {
+        "slug": "error-ie-lg-dishwasher",
+        "error_code": "IE",
+        "device_brand": "LG",
+        "device_type": "Dishwasher",
+        "model_series": "QuadWash",
+        "fix_steps": [
+            "Check the water inlet valve.",
+            "Ensure water supply is turned on.",
+            "Inspect the inlet hose for kinks.",
+            "Clean the inlet filter screen."
+        ],
+        "severity": "Low",
+        "estimated_cost": "$20 - $50",
+        "affiliate_link": "https://amazon.com/lg-inlet-valve?tag=yourtag-20"
+    },
+    {
+        "slug": "error-he1-samsung-dryer",
+        "error_code": "HE1",
+        "device_brand": "Samsung",
+        "device_type": "Dryer",
+        "model_series": "DV5000",
+        "fix_steps": [
+            "Check the heating element for damage.",
+            "Inspect the thermal fuse.",
+            "Test the heating element for continuity.",
+            "Replace the heating element if necessary."
+        ],
+        "severity": "High",
+        "estimated_cost": "$80 - $180",
+        "affiliate_link": "https://amazon.com/samsung-heating-element?tag=yourtag-20"
+    },
+    {
+        "slug": "error-d80-whirlpool-dryer",
+        "error_code": "D80",
+        "device_brand": "Whirlpool",
+        "device_type": "Dryer",
+        "model_series": "Duet",
+        "fix_steps": [
+            "Clean the lint trap thoroughly.",
+            "Check the exhaust vent for blockages.",
+            "Inspect the vent hose for kinks or buildup.",
+            "Clean the entire vent system."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$0 - $30",
+        "affiliate_link": "https://amazon.com/dryer-vent-cleaning-kit?tag=yourtag-20"
+    },
+    {
+        "slug": "error-f70-kenmore-dryer",
+        "error_code": "F70",
+        "device_brand": "Kenmore",
+        "device_type": "Dryer",
+        "model_series": "Elite",
+        "fix_steps": [
+            "Check the user interface control board.",
+            "Inspect all button connections.",
+            "Test the control panel for responsiveness.",
+            "Replace the control board if faulty."
+        ],
+        "severity": "High",
+        "estimated_cost": "$90 - $200",
+        "affiliate_link": "https://amazon.com/kenmore-control-board?tag=yourtag-20"
+    },
+    {
+        "slug": "error-pe-lg-dryer",
+        "error_code": "PE",
+        "device_brand": "LG",
+        "device_type": "Dryer",
+        "model_series": "TrueSteam",
+        "fix_steps": [
+            "Check the pressure sensor switch.",
+            "Inspect the air flow system.",
+            "Clean all venting thoroughly.",
+            "Test the pressure sensor for proper operation."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$45 - $100",
+        "affiliate_link": "https://amazon.com/lg-pressure-sensor?tag=yourtag-20"
+    },
+    {
+        "slug": "error-de-samsung-dryer",
+        "error_code": "DE",
+        "device_brand": "Samsung",
+        "device_type": "Dryer",
+        "model_series": "FlexDry",
+        "fix_steps": [
+            "Check if the door is properly closed.",
+            "Inspect the door latch mechanism.",
+            "Clean the door strike area.",
+            "Replace the door latch switch if necessary."
+        ],
+        "severity": "Low",
+        "estimated_cost": "$25 - $60",
+        "affiliate_link": "https://amazon.com/samsung-door-latch?tag=yourtag-20"
+    },
+    {
+        "slug": "error-e1-f9-whirlpool-dishwasher",
+        "error_code": "E1/F9",
+        "device_brand": "Whirlpool",
+        "device_type": "Dishwasher",
+        "model_series": "Gold Series",
+        "fix_steps": [
+            "Check for a stuck float switch.",
+            "Inspect the base pan for water leaks.",
+            "Drain any water from the base.",
+            "Test the float switch operation."
+        ],
+        "severity": "High",
+        "estimated_cost": "$60 - $140",
+        "affiliate_link": "https://amazon.com/whirlpool-float-switch?tag=yourtag-20"
+    },
+    {
+        "slug": "error-i20-ge-dishwasher",
+        "error_code": "i20",
+        "device_brand": "GE",
+        "device_type": "Dishwasher",
+        "model_series": "Profile",
+        "fix_steps": [
+            "Check the drain pump for blockages.",
+            "Inspect the drain hose routing.",
+            "Clean the filter assembly.",
+            "Test the drain pump motor."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$40 - $85",
+        "affiliate_link": "https://amazon.com/ge-drain-pump?tag=yourtag-20"
+    },
+    {
+        "slug": "error-h20-kitchenaid-dishwasher",
+        "error_code": "H20",
+        "device_brand": "KitchenAid",
+        "device_type": "Dishwasher",
+        "model_series": "Architect",
+        "fix_steps": [
+            "Check water inlet valve operation.",
+            "Verify water supply is turned on.",
+            "Inspect the float assembly.",
+            "Clean the water inlet screen."
+        ],
+        "severity": "Medium",
+        "estimated_cost": "$35 - $80",
+        "affiliate_link": "https://amazon.com/kitchenaid-inlet-valve?tag=yourtag-20"
+    },
+    {
+        "slug": "error-te-samsung-washer",
+        "error_code": "tE",
+        "device_brand": "Samsung",
+        "device_type": "Washer",
+        "model_series": "FlexWash",
+        "fix_steps": [
+            "Check the thermistor sensor.",
+            "Inspect the wiring to the temperature sensor.",
+            "Test the thermistor for proper resistance.",
+            "Replace the thermistor if faulty."
+        ],
+        "severity": "High",
+        "estimated_cost": "$70 - $150",
+        "affiliate_link": "https://amazon.com/samsung-thermistor?tag=yourtag-20"
+    },
+    {
+        "slug": "error-sud-whirlpool-washer",
+        "error_code": "SUD",
+        "device_brand": "Whirlpool",
+        "device_type": "Washer",
+        "model_series": "WTW",
+        "fix_steps": [
+            "Stop the cycle and let it sit for 10 minutes.",
+            "Use less detergent next time (HE detergent only).",
+            "Run a rinse cycle to clear excess suds.",
+            "Check the drain for proper operation."
+        ],
+        "severity": "Low",
+        "estimated_cost": "$0 - $5",
+        "affiliate_link": "https://amazon.com/he-detergent?tag=yourtag-20"
+    },
+    {
+        "slug": "error-cl-lg-washer",
+        "error_code": "CL",
+        "device_brand": "LG",
+        "device_type": "Washer",
+        "model_series": "WM Series",
+        "fix_steps": [
+            "This is child lock indicator, not an error.",
+            "Press and hold the child lock button for 3 seconds.",
+            "Wait for the CL to disappear from display.",
+            "Resume normal operation."
+        ],
+        "severity": "None",
+        "estimated_cost": "$0",
+        "affiliate_link": "https://amazon.com/lg-washer-manual?tag=yourtag-20"
+    },
+    {
+        "slug": "error-pf-ge-washer",
+        "error_code": "PF",
+        "device_brand": "GE",
+        "device_type": "Washer",
+        "model_series": "GTW",
+        "fix_steps": [
+            "This indicates a power failure occurred.",
+            "Check the circuit breaker.",
+            "Press START/PAUSE to continue the cycle.",
+            "If it repeats, check electrical connections."
+        ],
+        "severity": "Low",
+        "estimated_cost": "$0 - $50",
+        "affiliate_link": "https://amazon.com/ge-power-board?tag=yourtag-20"
+    },
+    {
+        "slug": "error-f2-e1-maytag-oven",
+        "error_code": "F2/E1",
+        "device_brand": "Maytag",
+        "device_type": "Oven",
+        "model_series": "Gemini",
+        "fix_steps": [
+            "Turn off the oven and unplug it.",
+            "Check the oven temperature sensor.",
+            "Test the sensor resistance (should be ~1080 ohms at room temp).",
+            "Replace the temperature sensor if faulty."
+        ],
+        "severity": "High",
+        "estimated_cost": "$50 - $110",
+        "affiliate_link": "https://amazon.com/maytag-temp-sensor?tag=yourtag-20"
+    },
+    {
+        "slug": "error-f10-ge-oven",
+        "error_code": "F10",
+        "device_brand": "GE",
+        "device_type": "Oven",
+        "model_series": "Profile",
+        "fix_steps": [
+            "The oven is detecting runaway temperature.",
+            "Turn off the oven immediately.",
+            "Check the temperature sensor probe.",
+            "Inspect the control board for damage.",
+            "Replace the faulty component."
+        ],
+        "severity": "Critical",
+        "estimated_cost": "$80 - $200",
+        "affiliate_link": "https://amazon.com/ge-oven-control-board?tag=yourtag-20"
+    },
+    {
+        "slug": "error-loc-whirlpool-oven",
+        "error_code": "LOC",
+        "device_brand": "Whirlpool",
+        "device_type": "Oven",
+        "model_series": "WFE",
+        "fix_steps": [
+            "This means the control lock is active.",
+            "Press and hold the LOCK button for 3 seconds.",
+            "Wait for the lock indicator to turn off.",
+            "Resume normal operation."
+        ],
+        "severity": "None",
+        "estimated_cost": "$0",
+        "affiliate_link": "https://amazon.com/whirlpool-oven-manual?tag=yourtag-20"
+    }
+]

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}{{ custom_title if custom_title else "Fix Error " ~ item.error_code ~ " on " ~ item.device_brand ~ " "
+~ item.device_type ~ " - Step-by-Step Guide" }}{% endblock %}
+
+{% block description %}{{ custom_description if custom_description else "Complete guide to fixing the " ~
+item.error_code ~ " error code on your " ~ item.device_brand ~ " " ~ item.device_type ~ ". Estimated cost " ~
+item.estimated_cost ~ "." }}{% endblock %}
+
+{% block head %}
+<!-- SCHEMA.ORG INJECTION: AUTOMATION FOR MACHINES -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://your-domain.vercel.app/{{ item.slug }}.html#article",
+      "headline": "How to Fix Error {{ item.error_code }} on {{ item.device_brand }} {{ item.device_type }}",
+      "description": "Troubleshoot and repair {{ item.device_brand }} {{ item.device_type }} error {{ item.error_code }}. Severity: {{ item.severity }}.",
+      "image": "https://placehold.co/1200x630/0f172a/38bdf8?text=Error+{{ item.error_code }}",
+      "author": {
+        "@type": "Organization",
+        "name": "FixHub Automated Tech"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "FixHub",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://your-domain.vercel.app/logo.png"
+        }
+      },
+      "datePublished": "2025-01-01T08:00:00+00:00",
+      "dateModified": "2025-01-01T09:00:00+00:00"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What does Error {{ item.error_code }} mean on a {{ item.device_brand }} washer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The error code {{ item.error_code }} indicates an issue related to the {{ item.model_series }} series functionality, often requiring a check of {{ item.fix_steps[0] }}."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does it cost to fix {{ item.error_code }}?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The estimated repair cost is between {{ item.estimated_cost }}, depending on whether you need professional service or parts replacement."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://your-domain.vercel.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "{{ item.device_type }} Repairs",
+          "item": "https://your-domain.vercel.app/{{ item.device_type.lower() }}"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "{{ item.device_brand }} {{ item.device_type }}",
+          "item": "https://your-domain.vercel.app/{{ item.device_brand.lower() }}-{{ item.device_type.lower() }}"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Error {{ item.error_code }}"
+        }
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<article class="prose prose-slate max-w-none">
+  <header class="mb-10 text-center">
+    <span
+      class="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">Error
+      Code {{ item.error_code }}</span>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">
+      Fixing <span class="text-accent">{{ item.device_brand }}</span> Error <span class="text-red-500">{{
+        item.error_code }}</span>
+    </h1>
+    <p class="text-xl text-slate-500">
+      Official troubleshooting guide for {{ item.device_brand }} {{ item.device_type }} ({{ item.model_series }} Series)
+    </p>
+  </header>
+
+  <div class="grid md:grid-cols-3 gap-8">
+    <!-- Main Content Column -->
+    <div class="md:col-span-2 space-y-8">
+
+      <!-- Quick Info Card -->
+      <section class="glass-panel p-6 rounded-2xl shadow-sm">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <svg class="w-5 h-5 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Diagnostic Summary
+        </h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white p-3 rounded-lg border border-slate-100">
+            <span class="block text-xs text-slate-400 uppercase">Severity</span>
+            <span class="font-semibold text-slate-700">{{ item.severity }}</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-100">
+            <span class="block text-xs text-slate-400 uppercase">Est. Cost</span>
+            <span class="font-semibold text-emerald-600">{{ item.estimated_cost }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Steps -->
+      <section class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+        <h2 class="text-2xl font-bold mb-6">How to Fix It</h2>
+        <ol class="space-y-4">
+          {% for step in item.fix_steps %}
+          <li class="flex items-start">
+            <span
+              class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-slate-100 text-slate-600 rounded-full font-bold mr-4 text-sm">{{
+              loop.index }}</span>
+            <p class="text-slate-700 leading-relaxed">{{ step }}</p>
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
+
+    </div>
+
+    <!-- Sidebar / Monetization -->
+    <aside class="space-y-6">
+      <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg sticky top-24">
+        <h3 class="text-lg font-bold mb-4">Need Parts?</h3>
+        <p class="text-slate-300 text-sm mb-6">Don't overpay for repairs. Get the OEM parts delivered to your door.</p>
+
+        <a href="{{ item.affiliate_link }}" target="_blank" rel="nofollow noopener"
+          class="block w-full bg-accent hover:bg-sky-500 text-white text-center font-bold py-3 rounded-xl transition-all transform hover:scale-105 shadow-lg shadow-sky-900/20">
+          Buy {{ item.device_brand }} Parts &rarr;
+        </a>
+        <p class="text-xs text-center mt-4 text-slate-500">Ad / Affiliate Link</p>
+      </div>
+
+      <!-- Interlinking Graph -->
+      <div class="glass-panel p-6 rounded-2xl">
+        <h3 class="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wide">Related Errors</h3>
+        <ul class="space-y-2">
+          {% for link in related_pages %}
+          <li>
+            <a href="{{ link.slug }}.html" class="flex items-center text-slate-600 hover:text-accent group">
+              <span class="w-1.5 h-1.5 bg-slate-300 rounded-full mr-2 group-hover:bg-accent transition-colors"></span>
+              {{ link.error_code }} ({{ link.device_brand }})
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </aside>
+  </div>
+</article>
+{% endblock %}

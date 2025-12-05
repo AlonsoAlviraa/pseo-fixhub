@@ -11,7 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 DATA_FILE = 'data/dataset.json'
 TEMPLATE_DIR = 'templates'
 OUTPUT_DIR = 'output'
-BASE_URL = 'https://your-project.vercel.app'
+BASE_URL = 'https://alonsoalviraa.github.io/pseo-fixhub'
 
 # 🔥 CHINA TECH OPTIMIZATION FLAGS
 USE_PAGINATION_HASHING = True  # Distribute files across subdirectories

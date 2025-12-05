@@ -5,7 +5,7 @@ Generate robots.txt for SEO optimization
 import os
 
 OUTPUT_DIR = 'output'
-BASE_URL = 'https://your-project.vercel.app'
+BASE_URL = 'https://alonsoalviraa.github.io/pseo-fixhub'
 
 def generate_robots_txt():
     """Generate optimized robots.txt"""

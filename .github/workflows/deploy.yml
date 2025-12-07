@@ -33,49 +33,19 @@ jobs:
       run: |
         python build.py
         python generate_index.py
-        python generate_robots.py
     
     - name: Run tests
       run: |
         python test_suite.py
     
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: generated-site
-        path: output/
-        retention-days: 7
-    
-    - name: Deploy to Vercel (Production)
-      if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-      env:
-        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    - name: Copy output to docs (for GitHub Pages)
       run: |
-        npm install -g vercel
-        cd output
-        vercel --prod --token=$VERCEL_TOKEN --yes
+        rm -rf docs/*
+        cp -r output/* docs/
     
-    - name: Deploy to Vercel (Preview)
-      if: github.event_name == 'pull_request'
-      env:
-        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    - name: Commit and push if changes
       run: |
-        npm install -g vercel
-        cd output
-        vercel --token=$VERCEL_TOKEN --yes
-    
-    - name: Comment on PR
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: '✅ Build successful! Preview deployment ready.'
-          })
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add docs/
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update: Daily rebuild" && git push)

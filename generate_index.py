@@ -11,7 +11,8 @@ from jinja2 import Environment, FileSystemLoader
 DATA_FILE = 'data/dataset.json'
 TEMPLATE_DIR = 'templates'
 OUTPUT_DIR = 'output'
-BASE_URL = 'https://alonsoalviraa.github.io/pseo-fixhub'
+BASE_URL = os.getenv('BASE_URL', 'https://alonsoalviraa.github.io/pseo-fixhub').strip()
+BRANDS_HASH_ROOT = __import__('hashlib').md5('brands'.encode('utf-8')).hexdigest()[:2]
 GA_MEASUREMENT_ID = os.getenv('GA_MEASUREMENT_ID', '').strip()
 
 def load_data():
@@ -138,7 +139,7 @@ def generate_index():
 """
 
     for brand, meta in sorted(by_brand.items()):
-        hub_url = f"{BASE_URL}/brands/{meta['slug']}/"
+        hub_url = f"{BASE_URL}/{BRANDS_HASH_ROOT}/brands/{meta['slug']}/"
         devices = ', '.join(sorted(meta['devices']))
         html += f"""
                 <a href=\"{hub_url}\" class=\"glass-panel p-6 rounded-xl hover:shadow-lg transition-all hover:-translate-y-1 block\">

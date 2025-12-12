@@ -30,11 +30,11 @@ F10 | GE Oven | https://alonsoalviraa.github.io/pseo-fixhub/fc/error-f10-ge-oven
 LOC | Whirlpool Oven | https://alonsoalviraa.github.io/pseo-fixhub/5f/error-loc-whirlpool-oven.html
 
 # Brand hubs
-Samsung | 6 guides | https://alonsoalviraa.github.io/pseo-fixhub/brands/samsung/
-LG | 5 guides | https://alonsoalviraa.github.io/pseo-fixhub/brands/lg/
-Whirlpool | 6 guides | https://alonsoalviraa.github.io/pseo-fixhub/brands/whirlpool/
-Bosch | 2 guides | https://alonsoalviraa.github.io/pseo-fixhub/brands/bosch/
-Maytag | 2 guides | https://alonsoalviraa.github.io/pseo-fixhub/brands/maytag/
-Kenmore | 1 guides | https://alonsoalviraa.github.io/pseo-fixhub/brands/kenmore/
-GE | 3 guides | https://alonsoalviraa.github.io/pseo-fixhub/brands/ge/
-KitchenAid | 1 guides | https://alonsoalviraa.github.io/pseo-fixhub/brands/kitchenaid/
+Samsung | 6 guides | https://alonsoalviraa.github.io/pseo-fixhub/63/brands/samsung/
+LG | 5 guides | https://alonsoalviraa.github.io/pseo-fixhub/63/brands/lg/
+Whirlpool | 6 guides | https://alonsoalviraa.github.io/pseo-fixhub/63/brands/whirlpool/
+Bosch | 2 guides | https://alonsoalviraa.github.io/pseo-fixhub/63/brands/bosch/
+Maytag | 2 guides | https://alonsoalviraa.github.io/pseo-fixhub/63/brands/maytag/
+Kenmore | 1 guides | https://alonsoalviraa.github.io/pseo-fixhub/63/brands/kenmore/
+GE | 3 guides | https://alonsoalviraa.github.io/pseo-fixhub/63/brands/ge/
+KitchenAid | 1 guides | https://alonsoalviraa.github.io/pseo-fixhub/63/brands/kitchenaid/

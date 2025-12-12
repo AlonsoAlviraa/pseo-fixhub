@@ -126,6 +126,46 @@ item.estimated_cost ~ "." }}{% endblock %}
             <span class="font-semibold text-emerald-600">{{ item.estimated_cost }}</span>
           </div>
         </div>
+        <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+          <strong>Safety First:</strong> {{ item.safety_note }}
+        </div>
+      </section>
+
+      <section class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+        <h2 class="text-2xl font-bold mb-6">What This Error Looks Like</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="font-semibold text-slate-800 mb-3 text-sm uppercase tracking-wide">Likely Symptoms</h3>
+            <ul class="space-y-2 list-disc list-inside text-slate-700">
+              {% for symptom in item.symptoms %}
+              <li>{{ symptom }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold text-slate-800 mb-3 text-sm uppercase tracking-wide">Common Root Causes</h3>
+            <ul class="space-y-2 list-disc list-inside text-slate-700">
+              {% for cause in item.causes %}
+              <li>{{ cause }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass-panel p-6 rounded-2xl border border-slate-100">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <svg class="w-5 h-5 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Tools & Prep Checklist
+        </h2>
+        <ul class="space-y-2 text-slate-700 list-disc list-inside">
+          {% for tool in item.toolkit %}
+          <li>{{ tool }}</li>
+          {% endfor %}
+        </ul>
       </section>
 
       <!-- Steps -->
@@ -141,6 +181,30 @@ item.estimated_cost ~ "." }}{% endblock %}
           </li>
           {% endfor %}
         </ol>
+      </section>
+
+      <section class="bg-slate-900 text-white p-8 rounded-2xl shadow-lg">
+        <h2 class="text-2xl font-bold mb-4">Detailed Walkthrough</h2>
+        <div class="space-y-4">
+          {% for expanded in item.expanded_steps %}
+          <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+            <h3 class="text-sm uppercase tracking-wide text-slate-200 font-semibold">{{ expanded.title }}</h3>
+            <p class="text-slate-100 leading-relaxed">{{ expanded.body }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+        <h2 class="text-2xl font-bold mb-4">Keep the Error From Coming Back</h2>
+        <ul class="space-y-2 list-disc list-inside text-slate-700">
+          {% for tip in item.maintenance_tips %}
+          <li>{{ tip }}</li>
+          {% endfor %}
+        </ul>
+        <div class="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800">
+          <strong>Need help?</strong> {{ item.pro_help }}
+        </div>
       </section>
 
     </div>

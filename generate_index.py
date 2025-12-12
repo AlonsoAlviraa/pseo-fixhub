@@ -12,6 +12,7 @@ DATA_FILE = 'data/dataset.json'
 TEMPLATE_DIR = 'templates'
 OUTPUT_DIR = 'output'
 BASE_URL = 'https://your-project.vercel.app'
+GA_MEASUREMENT_ID = os.getenv('GA_MEASUREMENT_ID', '').strip()
 
 def load_data():
     """Load the dataset from JSON."""
@@ -47,53 +48,67 @@ def generate_index():
             'url': f"{hash_path}.html"
         })
     
-    # Generate HTML manually (simple template)
-    html = """<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FixHub - Automated Repair Knowledge Base</title>
-    <meta name="description" content="Complete database of error codes and repair guides for appliances. 100% automated, always up-to-date.">
-    <script src="https://cdn.tailwindcss.com"></script>
+    analytics_snippet = ""
+    if GA_MEASUREMENT_ID:
+        analytics_snippet = f"""
+    <!-- Google Analytics -->
+    <script async src=\"https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}\"></script>
     <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-              colors: {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){{dataLayer.push(arguments);}}
+        gtag('js', new Date());
+        gtag('config', '{GA_MEASUREMENT_ID}');
+    </script>
+        """
+
+    # Generate HTML manually (simple template)
+    html = f"""<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>FixHub - Automated Repair Knowledge Base</title>
+    <meta name=\"description\" content=\"Complete database of error codes and repair guides for appliances. 100% automated, always up-to-date.\">
+    <script src=\"https://cdn.tailwindcss.com\"></script>
+    <script>
+        tailwind.config = {{
+          theme: {{
+            extend: {{
+              colors: {{
                 primary: '#0f172a',
                 accent: '#38bdf8',
-              }
-            }
-          }
-        }
+              }}
+            }}
+          }}
+        }}
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .glass-panel {
+        body {{ font-family: 'Inter', sans-serif; }}
+        .glass-panel {{
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-        }
+        }}
     </style>
-</head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-    
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-10">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="index.html" class="font-bold text-2xl text-slate-800">Fix<span class="text-accent">Hub</span></a>
-            <div class="text-sm text-slate-500">The Automated Repair Knowledge Base</div>
+{analytics_snippet}
+  </head>
+<body class=\"bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen\">
+
+    <nav class=\"bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-10\">
+        <div class=\"max-w-6xl mx-auto px-4 py-4 flex justify-between items-center\">
+            <a href=\"index.html\" class=\"font-bold text-2xl text-slate-800\">Fix<span class=\"text-accent\">Hub</span></a>
+            <div class=\"text-sm text-slate-500\">The Automated Repair Knowledge Base</div>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto px-4 py-12">
-        
-        <header class="text-center mb-16">
-            <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 mb-4">
-                Fix Any <span class="text-accent">Error Code</span>
+    <main class=\"max-w-6xl mx-auto px-4 py-12\">
+
+        <header class=\"text-center mb-16\">
+            <h1 class=\"text-5xl md:text-6xl font-extrabold text-slate-900 mb-4\">
+                Fix Any <span class=\"text-accent\">Error Code</span>
             </h1>
-            <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-                Automated repair guides for """ + str(len(data)) + """ common appliance errors.
+            <p class=\"text-xl text-slate-600 max-w-2xl mx-auto\">
+                Automated repair guides for {len(data)} common appliance errors.
                 100% free, always updated.
             </p>
         </header>

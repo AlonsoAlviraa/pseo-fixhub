@@ -12,6 +12,7 @@ DATA_FILE = 'data/dataset.json'
 TEMPLATE_DIR = 'templates'
 OUTPUT_DIR = 'output'
 BASE_URL = 'https://alonsoalviraa.github.io/pseo-fixhub'
+GA_MEASUREMENT_ID = os.getenv('GA_MEASUREMENT_ID', '').strip()
 
 # 🔥 CHINA TECH OPTIMIZATION FLAGS
 USE_PAGINATION_HASHING = True  # Distribute files across subdirectories
@@ -39,6 +40,131 @@ DESCRIPTION_VARIANTS = [
     "How to solve error {code} on {brand} {device}. Cost range: {cost}.",
     "Expert repair guide for {brand} {device} error {code}. Price: {cost}."
 ]
+
+# ========================================
+# CONTENT ENRICHMENT HELPERS
+# ========================================
+def infer_symptoms(item):
+    """Heuristic-based symptom hints to provide richer context."""
+    device = item.get('device_type', '').lower()
+    error = item.get('error_code', '').upper()
+    hints = [
+        f"Intermittent performance or repeated code {error} after a reset",
+        "Cycles stopping unexpectedly before completion",
+        "Unusual noises or vibrations during operation"
+    ]
+
+    keywords = ' '.join(item.get('fix_steps', [])).lower()
+    if 'drain' in keywords or 'pump' in keywords:
+        hints.append("Water remaining in the tub or slow draining after a cycle")
+    if 'filter' in keywords:
+        hints.append("Visible debris or lint accumulation around service panels")
+    if 'sensor' in keywords or 'thermistor' in keywords:
+        hints.append("Inconsistent temperature readings or heat cycles")
+    if 'door' in keywords or 'latch' in keywords:
+        hints.append("Door will not lock or unlock cleanly before starting")
+    if 'hose' in keywords:
+        hints.append("Moisture around hose connections or kinks along the line")
+    if device in ('washer', 'dishwasher'):
+        hints.append("Persistent odor from standing water between washes")
+
+    return hints
+
+
+def infer_causes(item):
+    """Map common error surfaces to possible root causes."""
+    causes = [
+        "Temporary glitch cleared by a full power cycle",
+        "Blocked air or water pathways reducing flow efficiency",
+        "Loose connectors or aging components that need reseating"
+    ]
+
+    keywords = ' '.join(item.get('fix_steps', [])).lower()
+    if 'drain' in keywords:
+        causes.append("Drain pump struggling because of clogs or kinked hoses")
+    if 'filter' in keywords:
+        causes.append("Maintenance overdue on intake or debris filters")
+    if 'sensor' in keywords:
+        causes.append("Misreadings from moisture or temperature sensors")
+    if 'vent' in keywords or 'exhaust' in keywords:
+        causes.append("Restricted ventilation leading to overheating")
+    if 'reset' in keywords:
+        causes.append("Firmware protection triggered after repeated failed cycles")
+
+    return causes
+
+
+def recommend_toolkit(device_type):
+    """Return a short list of tools suitable for the appliance type."""
+    device = (device_type or '').lower()
+    base = [
+        "Phillips and flathead screwdrivers",
+        "Microfiber towels for cleanup",
+        "Smartphone flashlight or headlamp"
+    ]
+
+    if device in ('washer', 'dishwasher'):
+        base.extend([
+            "Bucket or shallow pan for capturing residual water",
+            "Needle-nose pliers for clamps and hoses"
+        ])
+    if device in ('dryer', 'oven'):
+        base.append("Vacuum with hose attachment for lint or debris")
+    if device:
+        base.append(f"Replacement parts specific to your {device_type.lower()} model")
+    return base
+
+
+def expand_fix_steps(fix_steps):
+    """Transform terse fix steps into explanatory paragraphs."""
+    expanded = []
+    for idx, step in enumerate(fix_steps, start=1):
+        lower = step.lower()
+        detail = step
+        if 'unplug' in lower or 'power' in lower:
+            detail += " This fully discharges the control board and prevents accidental shorts while you inspect the unit."
+        elif 'hose' in lower or 'drain' in lower:
+            detail += " Clearing hoses and drain paths restores proper water flow and removes the most common cause of this code."
+        elif 'filter' in lower:
+            detail += " A clogged filter restricts circulation; rinsing it under running water often clears the code immediately."
+        elif 'reset' in lower or 'restart' in lower:
+            detail += " After hardware checks, a clean restart lets the appliance reinitialize sensors and run a self-test."
+        else:
+            detail += " Take a moment to confirm the step is completed before moving forward to avoid repeating diagnostics."
+        expanded.append({
+            'title': f"Step {idx}",
+            'body': detail
+        })
+    return expanded
+
+
+def maintenance_tips(item):
+    """Provide ongoing prevention ideas derived from the data."""
+    tips = [
+        "Log the date of this repair so you can identify recurring patterns over time.",
+        "Run a quick rinse or empty cycle monthly to keep sensors clean.",
+        "Inspect power cords and hoses for visible wear whenever you move the appliance."
+    ]
+
+    if 'filter' in ' '.join(item.get('fix_steps', [])).lower():
+        tips.append("Add a calendar reminder to clean intake and drain filters every 30 days.")
+    if item.get('device_type', '').lower() == 'dryer':
+        tips.append("Clear lint from vents and ducts at least once per season to maintain airflow.")
+    return tips
+
+
+def build_enriched_payload(item):
+    """Combine the raw item with derived, richer content fields."""
+    return {
+        **item,
+        'symptoms': infer_symptoms(item),
+        'causes': infer_causes(item),
+        'toolkit': recommend_toolkit(item.get('device_type')),
+        'expanded_steps': expand_fix_steps(item.get('fix_steps', [])),
+        'maintenance_tips': maintenance_tips(item),
+        'safety_note': "Disconnect power and water supplies before opening panels. Keep floors dry to prevent slips.",
+        'pro_help': "If the error returns after completing these steps twice, contact a certified technician to check the control board, pump, and wiring harness."
+    }
 
 # ========================================
 # HELPER FUNCTIONS
@@ -190,18 +316,21 @@ def generate_pages(data, env):
         # RENDER THE PAGE
         # ========================================
         print(f"[{generated_count+1}/{total_items}] Generating {filename}...")
-        
+
+        enriched_item = build_enriched_payload(item)
+
         html_content = template.render(
-            item=item,
+            item=enriched_item,
             related_pages=related_pages,
             now=datetime.datetime.now(),
             custom_title=custom_title,
-            custom_description=custom_description
+            custom_description=custom_description,
+            analytics_id=GA_MEASUREMENT_ID,
         )
-        
+
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(html_content)
-            
+
         generated_count += 1
         
     return generated_count

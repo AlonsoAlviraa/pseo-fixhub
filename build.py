@@ -3,6 +3,7 @@ import json
 import datetime
 import hashlib
 import random
+import textwrap
 from collections import defaultdict
 from jinja2 import Environment, FileSystemLoader
 
@@ -239,7 +240,81 @@ def build_enriched_payload(item):
         'difficulty': classify_difficulty(item.get('severity')),
         'recommended_parts': recommend_parts(item),
         'diagnostic_checks': diagnostic_checks(item),
+        'faq_entries': build_faq_entries(item),
+        'hero_image': item.get('hero_image'),
     }
+
+
+def build_faq_entries(item):
+    """Generate practical FAQs for each guide."""
+    code = item.get('error_code', 'the error')
+    brand = item.get('device_brand', 'your appliance')
+    device = item.get('device_type', 'device')
+    steps = item.get('fix_steps', [])
+    first_step = steps[0] if steps else 'Power cycle and inspect hoses'
+
+    faqs = [
+        {
+            'q': f"What does error {code} mean on a {brand} {device}?",
+            'a': f"It usually indicates the control board detected a protection condition. Start with: {first_step}."
+        },
+        {
+            'q': f"Is it safe to keep using the appliance with code {code}?",
+            'a': "Avoid running full cycles until you have checked hoses, filters, and power to prevent worsening the fault."
+        },
+        {
+            'q': f"When should I call a professional for error {code}?",
+            'a': "If the code returns after two complete troubleshooting attempts or you see leaks/burning smells, schedule service."
+        },
+        {
+            'q': f"How do I prevent error {code} from coming back?",
+            'a': "Clean filters monthly, keep vents clear, and run a maintenance cycle every 30 days to prevent buildup."
+        },
+    ]
+
+    return faqs
+
+
+def ensure_images_dir():
+    images_dir = os.path.join(OUTPUT_DIR, 'images')
+    os.makedirs(images_dir, exist_ok=True)
+    return images_dir
+
+
+def write_svg_badge(item, images_dir):
+    """Create a lightweight SVG hero badge per guide to improve visual quality without external assets."""
+    slug = item.get('slug', 'guide')
+    brand = item.get('device_brand', 'Appliance')
+    device = item.get('device_type', 'Device')
+    code = item.get('error_code', '').upper()
+
+    palette = ['#0EA5E9', '#22C55E', '#F97316', '#6366F1', '#EC4899', '#F59E0B']
+    color = palette[hash(slug) % len(palette)]
+
+    svg_content = textwrap.dedent(f"""
+    <svg xmlns='http://www.w3.org/2000/svg' width='960' height='540' viewBox='0 0 960 540' role='img' aria-label='Guide hero image for {brand} {device} error {code}'>
+      <defs>
+        <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+          <stop offset='0%' stop-color='{color}' stop-opacity='0.15'/>
+          <stop offset='100%' stop-color='#0F172A' stop-opacity='0.9'/>
+        </linearGradient>
+      </defs>
+      <rect width='960' height='540' fill='#0F172A'/>
+      <rect width='960' height='540' fill='url(#g)'/>
+      <circle cx='180' cy='140' r='110' fill='{color}' opacity='0.25'/>
+      <circle cx='820' cy='420' r='160' fill='{color}' opacity='0.18'/>
+      <text x='80' y='170' fill='#E2E8F0' font-size='28' font-family='Inter, system-ui' font-weight='700'>FixHub</text>
+      <text x='80' y='230' fill='#38BDF8' font-size='96' font-family='Inter, system-ui' font-weight='800'>Error {code}</text>
+      <text x='80' y='290' fill='#CBD5E1' font-size='34' font-family='Inter, system-ui' font-weight='600'>{brand} {device}</text>
+      <text x='80' y='340' fill='#94A3B8' font-size='22' font-family='Inter, system-ui'>Guided repair steps · Safety first · DIY checklist</text>
+    </svg>
+    """)
+
+    path = os.path.join(images_dir, f"{slug}.svg")
+    with open(path, 'w', encoding='utf-8') as svg_file:
+        svg_file.write(svg_content)
+
+    return path
 
 # ========================================
 # HELPER FUNCTIONS
@@ -302,6 +377,8 @@ def generate_pages(data, env):
     
     total_items = len(data)
     generated_count = 0
+
+    images_dir = ensure_images_dir()
     
     # Track files per hashed directory for optional directory index generation
     subdir_pages = defaultdict(list)
@@ -393,7 +470,14 @@ def generate_pages(data, env):
         # ========================================
         print(f"[{generated_count+1}/{total_items}] Generating {filename}...")
 
-        enriched_item = build_enriched_payload(item)
+        hero_path = write_svg_badge(item, images_dir)
+        item_with_hero = {
+            **item,
+            'hero_image': f"{BASE_URL}/images/{slug}.svg",
+            'page_url': f"{BASE_URL}/{hash_path}.html",
+        }
+
+        enriched_item = build_enriched_payload(item_with_hero)
 
         html_content = template.render(
             item=enriched_item,

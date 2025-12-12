@@ -15,10 +15,10 @@ item.estimated_cost ~ "." }}{% endblock %}
   "@graph": [
     {
       "@type": "TechArticle",
-      "@id": "https://your-domain.vercel.app/{{ item.slug }}.html#article",
+      "@id": "{{ item.page_url }}#article",
       "headline": "How to Fix Error {{ item.error_code }} on {{ item.device_brand }} {{ item.device_type }}",
       "description": "Troubleshoot and repair {{ item.device_brand }} {{ item.device_type }} error {{ item.error_code }}. Severity: {{ item.severity }}.",
-      "image": "https://placehold.co/1200x630/0f172a/38bdf8?text=Error+{{ item.error_code }}",
+      "image": "{{ item.hero_image }}",
       "author": {
         "@type": "Organization",
         "name": "FixHub Automated Tech"
@@ -68,13 +68,13 @@ item.estimated_cost ~ "." }}{% endblock %}
           "@type": "ListItem",
           "position": 2,
           "name": "{{ item.device_type }} Repairs",
-          "item": "https://alonsoalviraa.github.io/pseo-fixhub/{{ item.device_type.lower() }}"
+          "item": "{{ item.page_url }}"
         },
         {
           "@type": "ListItem",
           "position": 3,
           "name": "{{ item.device_brand }} {{ item.device_type }}",
-          "item": "https://alonsoalviraa.github.io/pseo-fixhub/{{ item.device_brand.lower() }}-{{ item.device_type.lower() }}"
+          "item": "{{ item.page_url }}"
         },
         {
           "@type": "ListItem",
@@ -94,6 +94,10 @@ item.estimated_cost ~ "." }}{% endblock %}
     <span
       class="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">Error
       Code {{ item.error_code }}</span>
+    <div class="mt-4 mb-6 overflow-hidden rounded-3xl shadow-lg border border-slate-100">
+      <img src="{{ item.hero_image }}" alt="Hero image for {{ item.device_brand }} {{ item.device_type }} error {{ item.error_code }}"
+        class="w-full h-auto" loading="lazy" decoding="async" />
+    </div>
     <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">
       Fixing <span class="text-accent">{{ item.device_brand }}</span> Error <span class="text-red-500">{{
         item.error_code }}</span>
@@ -202,6 +206,24 @@ item.estimated_cost ~ "." }}{% endblock %}
           </li>
           {% endfor %}
         </ol>
+      </section>
+
+      <section class="glass-panel p-6 rounded-2xl border border-slate-100">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <svg class="w-5 h-5 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m2 5H7a2 2 0 01-2-2V7a2 2 0 012-2h2l1-2h4l1 2h2a2 2 0 012 2v12a2 2 0 01-2 2z"></path>
+          </svg>
+          Frequently Asked Questions
+        </h2>
+        <div class="space-y-3">
+          {% for faq in item.faq_entries %}
+          <details class="bg-white border border-slate-100 rounded-xl p-4" {% if loop.first %}open{% endif %}>
+            <summary class="font-semibold text-slate-800 cursor-pointer">{{ faq.q }}</summary>
+            <p class="mt-2 text-slate-700">{{ faq.a }}</p>
+          </details>
+          {% endfor %}
+        </div>
       </section>
 
       <section class="bg-slate-900 text-white p-8 rounded-2xl shadow-lg">

@@ -3,6 +3,7 @@ import json
 import datetime
 import hashlib
 import random
+from collections import defaultdict
 from jinja2 import Environment, FileSystemLoader
 
 # ========================================
@@ -229,8 +230,8 @@ def generate_pages(data, env):
     total_items = len(data)
     generated_count = 0
     
-    # Pre-cache all slugs for random linking (Spider Mesh)
-    all_slugs = [item.get('slug', f"page-{i}") for i, item in enumerate(data)]
+    # Track files per hashed directory for optional directory index generation
+    subdir_pages = defaultdict(list)
     
     for index, item in enumerate(data):
         slug = item.get('slug', f"page-{index}")
@@ -241,6 +242,7 @@ def generate_pages(data, env):
         hash_path = get_hash_path(slug)
         
         # Create subdirectory if using hashing
+        subdir = ''
         if USE_PAGINATION_HASHING:
             subdir = os.path.dirname(hash_path)
             full_subdir = os.path.join(OUTPUT_DIR, subdir)
@@ -332,8 +334,39 @@ def generate_pages(data, env):
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(html_content)
 
+        if USE_PAGINATION_HASHING and subdir:
+            subdir_pages[subdir].append(os.path.basename(filename))
+
         generated_count += 1
-        
+
+    # Generate lightweight index.html files per hashed directory to prevent 404s
+    # when users manually browse to /<hash>/ or /<hash>/index.html.
+    if USE_PAGINATION_HASHING:
+        for subdir, pages in subdir_pages.items():
+            index_path = os.path.join(OUTPUT_DIR, subdir, 'index.html')
+            # Redirect to the first page in the bucket and include a simple fallback list.
+            redirect_target = pages[0]
+            link_list = '\n'.join([f"        <li><a href=\"{p}\">{p}</a></li>" for p in pages])
+
+            index_html = f"""<!doctype html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"utf-8\">
+  <meta http-equiv=\"refresh\" content=\"0; url={redirect_target}\">
+  <title>Redirecting...</title>
+</head>
+<body>
+  <p>If you are not redirected, open the guide here: <a href=\"{redirect_target}\">{redirect_target}</a>.</p>
+  <ul>
+{link_list}
+  </ul>
+</body>
+</html>
+"""
+
+            with open(index_path, 'w', encoding='utf-8') as index_file:
+                index_file.write(index_html)
+
     return generated_count
 
 def generate_sitemap(data):

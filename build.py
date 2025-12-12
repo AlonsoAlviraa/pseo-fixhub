@@ -13,6 +13,7 @@ TEMPLATE_DIR = 'templates'
 OUTPUT_DIR = 'output'
 BASE_URL = 'https://alonsoalviraa.github.io/pseo-fixhub'
 GA_MEASUREMENT_ID = os.getenv('GA_MEASUREMENT_ID', '').strip()
+BUILD_SEED = int(os.getenv('BUILD_SEED', '42'))
 
 # 🔥 CHINA TECH OPTIMIZATION FLAGS
 USE_PAGINATION_HASHING = True  # Distribute files across subdirectories
@@ -416,6 +417,29 @@ Allow: /
     print(f"[OK] Generated robots.txt")
 
 
+def write_page_manifest(data):
+    """Create a human-readable list of generated pages for manual QA."""
+    manifest_path = os.path.join(OUTPUT_DIR, 'pages_manifest.txt')
+    header = [
+        "# FixHub page manifest (generated)",
+        f"# Base URL: {BASE_URL}",
+        "# Format: <error_code> | <brand device_type> | <url>",
+        "",
+    ]
+
+    lines = []
+    for item in data:
+        slug = item.get('slug')
+        label = f"{item.get('device_brand')} {item.get('device_type')}".strip()
+        hash_path = get_hash_path(slug)
+        url = f"{BASE_URL}/{hash_path}.html".replace('\\', '/')
+        lines.append(f"{item.get('error_code')} | {label} | {url}")
+
+    with open(manifest_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(header + lines))
+    print(f"[OK] Wrote page manifest with {len(lines)} entries to {manifest_path}")
+
+
 def main():
     print("=" * 60)
     print(">>> pSEO CHINA TECH FACTORY - STARTING BUILD")
@@ -432,11 +456,14 @@ def main():
     
     env = setup_environment()
     
+    random.seed(BUILD_SEED)
+
     count = generate_pages(data, env)
     print(f"\n[OK] Successfully generated {count} pages.")
-    
+
     generate_sitemap(data)
     generate_robots()
+    write_page_manifest(data)
     print("=" * 60)
     print(">>> BUILD COMPLETE <<<")
     print("=" * 60)

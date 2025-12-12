@@ -11,7 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 DATA_FILE = 'data/dataset.json'
 TEMPLATE_DIR = 'templates'
 OUTPUT_DIR = 'output'
-BASE_URL = 'https://your-project.vercel.app'
+BASE_URL = 'https://alonsoalviraa.github.io/pseo-fixhub'
 GA_MEASUREMENT_ID = os.getenv('GA_MEASUREMENT_ID', '').strip()
 
 def load_data():
@@ -45,7 +45,7 @@ def generate_index():
             'device_brand': item.get('device_brand'),
             'device_type': device_type,
             'severity': item.get('severity'),
-            'url': f"{hash_path}.html"
+            'url': f"{BASE_URL}/{hash_path}.html".replace('\\', '/')
         })
     
     analytics_snippet = ""

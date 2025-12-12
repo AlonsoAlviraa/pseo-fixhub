@@ -116,7 +116,7 @@ item.estimated_cost ~ "." }}{% endblock %}
           </svg>
           Diagnostic Summary
         </h2>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
           <div class="bg-white p-3 rounded-lg border border-slate-100">
             <span class="block text-xs text-slate-400 uppercase">Severity</span>
             <span class="font-semibold text-slate-700">{{ item.severity }}</span>
@@ -124,6 +124,14 @@ item.estimated_cost ~ "." }}{% endblock %}
           <div class="bg-white p-3 rounded-lg border border-slate-100">
             <span class="block text-xs text-slate-400 uppercase">Est. Cost</span>
             <span class="font-semibold text-emerald-600">{{ item.estimated_cost }}</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-100">
+            <span class="block text-xs text-slate-400 uppercase">Difficulty</span>
+            <span class="font-semibold text-slate-700">{{ item.difficulty }}</span>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-100">
+            <span class="block text-xs text-slate-400 uppercase">Time Required</span>
+            <span class="font-semibold text-slate-700">{{ item.time_required }}</span>
           </div>
         </div>
         <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
@@ -161,11 +169,24 @@ item.estimated_cost ~ "." }}{% endblock %}
           </svg>
           Tools & Prep Checklist
         </h2>
-        <ul class="space-y-2 text-slate-700 list-disc list-inside">
-          {% for tool in item.toolkit %}
-          <li>{{ tool }}</li>
-          {% endfor %}
-        </ul>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-2">Diagnostic Checks</h3>
+            <ul class="space-y-2 text-slate-700 list-disc list-inside">
+              {% for check in item.diagnostic_checks %}
+              <li>{{ check }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-2">Tools</h3>
+            <ul class="space-y-2 text-slate-700 list-disc list-inside">
+              {% for tool in item.toolkit %}
+              <li>{{ tool }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
       </section>
 
       <!-- Steps -->
@@ -220,6 +241,15 @@ item.estimated_cost ~ "." }}{% endblock %}
           Buy {{ item.device_brand }} Parts &rarr;
         </a>
         <p class="text-xs text-center mt-4 text-slate-500">Ad / Affiliate Link</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="text-lg font-bold mb-4 text-slate-900">Recommended Parts</h3>
+        <ul class="space-y-2 text-slate-700 list-disc list-inside">
+          {% for part in item.recommended_parts %}
+          <li>{{ part }}</li>
+          {% endfor %}
+        </ul>
       </div>
 
       <!-- Interlinking Graph -->

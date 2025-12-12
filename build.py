@@ -155,6 +155,75 @@ def maintenance_tips(item):
     return tips
 
 
+def estimate_time_required(fix_steps, severity):
+    """Return a friendly repair time window based on steps and severity."""
+    base_minutes = max(20, len(fix_steps) * 12)
+    severity = (severity or '').lower()
+    if severity == 'high':
+        base_minutes += 25
+    elif severity == 'medium':
+        base_minutes += 10
+    # Express as a range to stay realistic
+    return f"{base_minutes}-{base_minutes + 20} minutes"
+
+
+def classify_difficulty(severity):
+    """Map severity into a consumer-friendly difficulty label."""
+    severity = (severity or '').lower()
+    if severity == 'low':
+        return "Easy (DIY-friendly)"
+    if severity == 'medium':
+        return "Moderate"
+    return "Advanced — consider a pro"
+
+
+def recommend_parts(item):
+    """Infer likely replacement parts users may need to order."""
+    suggestions = []
+    steps_text = ' '.join(item.get('fix_steps', [])).lower()
+    device = (item.get('device_type') or '').lower()
+
+    if 'hose' in steps_text:
+        suggestions.append("OEM drain or inlet hose kit")
+    if 'filter' in steps_text:
+        suggestions.append("Lint/debris filter compatible with your model")
+    if 'pump' in steps_text:
+        suggestions.append("Circulation or drain pump assembly")
+    if 'sensor' in steps_text or 'thermistor' in steps_text:
+        suggestions.append("Replacement sensor/thermistor with harness")
+    if 'valve' in steps_text:
+        suggestions.append("Water inlet valve")
+    if 'seal' in steps_text or 'gasket' in steps_text:
+        suggestions.append("Door gasket or sealant kit")
+
+    if device == 'dryer':
+        suggestions.append("High-temp vent duct and clamps")
+    elif device == 'dishwasher':
+        suggestions.append("Dishwasher-safe descaler or cleaning tablets")
+
+    return suggestions or ["No parts typically required—start with cleaning and resets."]
+
+
+def diagnostic_checks(item):
+    """Provide simple checks to validate the issue before repairing."""
+    checks = [
+        "Power-cycle the appliance for 5 minutes to clear transient faults.",
+        "Verify the unit is level and stable to reduce vibration-related codes.",
+    ]
+
+    steps_text = ' '.join(item.get('fix_steps', [])).lower()
+    if 'drain' in steps_text or 'hose' in steps_text:
+        checks.append("Run a short cycle and listen for the drain pump; note any unusual noises.")
+    if 'filter' in steps_text:
+        checks.append("Inspect filters for debris under running water until flow is clear.")
+    if 'sensor' in steps_text:
+        checks.append("Check sensor connectors for corrosion or loose pins.")
+    if 'door' in steps_text or 'latch' in steps_text:
+        checks.append("Open/close the door three times to confirm the latch engages cleanly.")
+
+    return checks
+
+
 def build_enriched_payload(item):
     """Combine the raw item with derived, richer content fields."""
     return {
@@ -165,7 +234,11 @@ def build_enriched_payload(item):
         'expanded_steps': expand_fix_steps(item.get('fix_steps', [])),
         'maintenance_tips': maintenance_tips(item),
         'safety_note': "Disconnect power and water supplies before opening panels. Keep floors dry to prevent slips.",
-        'pro_help': "If the error returns after completing these steps twice, contact a certified technician to check the control board, pump, and wiring harness."
+        'pro_help': "If the error returns after completing these steps twice, contact a certified technician to check the control board, pump, and wiring harness.",
+        'time_required': estimate_time_required(item.get('fix_steps', []), item.get('severity')),
+        'difficulty': classify_difficulty(item.get('severity')),
+        'recommended_parts': recommend_parts(item),
+        'diagnostic_checks': diagnostic_checks(item),
     }
 
 # ========================================

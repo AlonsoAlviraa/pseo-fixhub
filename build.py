@@ -351,6 +351,11 @@ def get_template_variant():
     # and rotate: return random.choice(['page.html', 'page_v2.html', 'page_v3.html'])
     return 'page.html'
 
+
+def slugify(value: str) -> str:
+    """Create URL-safe slugs for hub pages."""
+    return ''.join(ch.lower() if ch.isalnum() else '-' for ch in value).strip('-')
+
 # ========================================
 # CORE FUNCTIONS
 # ========================================
@@ -471,10 +476,13 @@ def generate_pages(data, env):
         print(f"[{generated_count+1}/{total_items}] Generating {filename}...")
 
         hero_path = write_svg_badge(item, images_dir)
+        brand_slug = slugify(item.get('device_brand', '')) or 'brand'
         item_with_hero = {
             **item,
             'hero_image': f"{BASE_URL}/images/{slug}.svg",
             'page_url': f"{BASE_URL}/{hash_path}.html",
+            'brand_slug': brand_slug,
+            'brand_hub_url': f"{BASE_URL}/brands/{brand_slug}/",
         }
 
         enriched_item = build_enriched_payload(item_with_hero)
@@ -526,7 +534,56 @@ def generate_pages(data, env):
 
     return generated_count
 
-def generate_sitemap(data):
+
+def generate_brand_hubs(data, env):
+    """Build hub pages per brand to mirror Hugo-style bundles and improve crawlability."""
+    template = env.get_template('brand_hub.html')
+    hubs = []
+
+    grouped = defaultdict(list)
+    for item in data:
+        grouped[item.get('device_brand', 'Other')].append(item)
+
+    for brand, items in grouped.items():
+        brand_slug = slugify(brand) or 'brand'
+        hub_dir = os.path.join(OUTPUT_DIR, 'brands', brand_slug)
+        os.makedirs(hub_dir, exist_ok=True)
+
+        hub_entries = []
+        for entry in items:
+            slug = entry.get('slug')
+            hash_path = get_hash_path(slug)
+            hub_entries.append({
+                'error_code': entry.get('error_code'),
+                'device_type': entry.get('device_type'),
+                'severity': entry.get('severity'),
+                'url': f"{BASE_URL}/{hash_path}.html".replace('\\', '/'),
+            })
+
+        html_content = template.render(
+            brand=brand,
+            brand_slug=brand_slug,
+            entries=hub_entries,
+            total=len(hub_entries),
+            base_url=BASE_URL,
+            analytics_id=GA_MEASUREMENT_ID,
+        )
+
+        output_path = os.path.join(hub_dir, 'index.html')
+        with open(output_path, 'w', encoding='utf-8') as hub_file:
+            hub_file.write(html_content)
+
+        hubs.append({
+            'brand': brand,
+            'slug': brand_slug,
+            'url': f"{BASE_URL}/brands/{brand_slug}/",
+            'count': len(hub_entries),
+        })
+
+    print(f"[OK] Generated {len(hubs)} brand hubs")
+    return hubs
+
+def generate_sitemap(data, hubs=None):
     """
     Generate sitemap.xml for Google Search Console.
     Respects pagination hashing for URLs.
@@ -551,11 +608,22 @@ def generate_sitemap(data):
   </url>\n"""
         root += entry
         
+    hubs = hubs or []
+
+    for hub in hubs:
+        entry = f"""  <url>
+    <loc>{hub['url']}</loc>
+    <lastmod>{datetime.date.today().isoformat()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>\n"""
+        root += entry
+
     root += '</urlset>'
     
     with open(sitemap_path, 'w', encoding='utf-8') as f:
         f.write(root)
-    print(f"[OK] Generated sitemap.xml with {len(data)} URLs")
+    print(f"[OK] Generated sitemap.xml with {len(data) + len(hubs)} URLs")
 
 def generate_robots():
     """
@@ -607,8 +675,9 @@ Allow: /
     print(f"[OK] Generated robots.txt")
 
 
-def write_page_manifest(data):
+def write_page_manifest(data, hubs=None):
     """Create a human-readable list of generated pages for manual QA."""
+    hubs = hubs or []
     manifest_path = os.path.join(OUTPUT_DIR, 'pages_manifest.txt')
     header = [
         "# FixHub page manifest (generated)",
@@ -624,6 +693,12 @@ def write_page_manifest(data):
         hash_path = get_hash_path(slug)
         url = f"{BASE_URL}/{hash_path}.html".replace('\\', '/')
         lines.append(f"{item.get('error_code')} | {label} | {url}")
+
+    if hubs:
+        lines.append("")
+        lines.append("# Brand hubs")
+        for hub in hubs:
+            lines.append(f"{hub['brand']} | {hub['count']} guides | {hub['url']}")
 
     with open(manifest_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(header + lines))
@@ -651,9 +726,11 @@ def main():
     count = generate_pages(data, env)
     print(f"\n[OK] Successfully generated {count} pages.")
 
-    generate_sitemap(data)
+    hubs = generate_brand_hubs(data, env)
+
+    generate_sitemap(data, hubs)
     generate_robots()
-    write_page_manifest(data)
+    write_page_manifest(data, hubs)
     print("=" * 60)
     print(">>> BUILD COMPLETE <<<")
     print("=" * 60)

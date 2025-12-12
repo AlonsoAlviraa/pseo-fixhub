@@ -26,20 +26,33 @@ def get_hash_path(slug):
     hash_prefix = hash_obj.hexdigest()[:2]
     return os.path.join(hash_prefix, slug)
 
+
+def slugify(value: str) -> str:
+    return ''.join(ch.lower() if ch.isalnum() else '-' for ch in value).strip('-')
+
 def generate_index():
     """Generate index.html with all pages listed."""
     data = load_data()
-    
+
     # Group by device type
     by_device = {}
+    by_brand = {}
     for item in data:
         device_type = item.get('device_type', 'Other')
         if device_type not in by_device:
             by_device[device_type] = []
-        
+
+        brand = item.get('device_brand', 'Other')
+        if brand not in by_brand:
+            by_brand[brand] = {
+                'slug': slugify(brand),
+                'count': 0,
+                'devices': set(),
+            }
+
         slug = item.get('slug')
         hash_path = get_hash_path(slug).replace('\\', '/')
-        
+
         by_device[device_type].append({
             'error_code': item.get('error_code'),
             'device_brand': item.get('device_brand'),
@@ -47,6 +60,9 @@ def generate_index():
             'severity': item.get('severity'),
             'url': f"{BASE_URL}/{hash_path}.html".replace('\\', '/')
         })
+
+        by_brand[brand]['count'] += 1
+        by_brand[brand]['devices'].add(device_type)
     
     analytics_snippet = ""
     if GA_MEASUREMENT_ID:
@@ -113,6 +129,31 @@ def generate_index():
             </p>
         </header>
 
+        <section class=\"mb-12\">
+            <h2 class=\"text-3xl font-bold text-slate-800 mb-4 flex items-center\">
+                <span class=\"w-2 h-8 bg-accent mr-3 rounded\"></span>
+                Browse by brand
+            </h2>
+            <div class=\"grid md:grid-cols-2 lg:grid-cols-3 gap-4\">
+"""
+
+    for brand, meta in sorted(by_brand.items()):
+        hub_url = f"{BASE_URL}/brands/{meta['slug']}/"
+        devices = ', '.join(sorted(meta['devices']))
+        html += f"""
+                <a href=\"{hub_url}\" class=\"glass-panel p-6 rounded-xl hover:shadow-lg transition-all hover:-translate-y-1 block\">
+                    <div class=\"flex justify-between items-start mb-3\">
+                        <span class=\"text-2xl font-bold text-accent\">{brand}</span>
+                        <span class=\"text-xs px-2 py-1 rounded-full bg-slate-900 text-white\">{meta['count']} guides</span>
+                    </div>
+                    <p class=\"text-sm text-slate-500\">Devices: {devices}</p>
+                </a>
+"""
+
+    html += """
+            </div>
+        </section>
+
 """
     
     # Add sections by device type
@@ -171,7 +212,7 @@ def generate_index():
         f.write(html)
     
     print(f"[OK] Generated index.html with {len(data)} repair guides")
-    print(f"     Grouped into {len(by_device)} device categories")
+    print(f"     Grouped into {len(by_device)} device categories and {len(by_brand)} brand hubs")
 
 if __name__ == "__main__":
     print("=" * 60)

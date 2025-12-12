@@ -1,0 +1,30 @@
+# FixHub page manifest (generated)
+# Base URL: https://alonsoalviraa.github.io/pseo-fixhub
+# Format: <error_code> | <brand device_type> | <url>
+
+E4 | Samsung Washer | https://alonsoalviraa.github.io/pseo-fixhub/e0/error-e4-samsung-washer.html
+5E | Samsung Washer | https://alonsoalviraa.github.io/pseo-fixhub/c5/error-5e-samsung-washer.html
+UE | LG Washer | https://alonsoalviraa.github.io/pseo-fixhub/d4/error-ue-lg-washer.html
+OE | LG Washer | https://alonsoalviraa.github.io/pseo-fixhub/bb/error-oe-lg-washer.html
+F1 | Whirlpool Washer | https://alonsoalviraa.github.io/pseo-fixhub/26/error-f1-whirlpool-washer.html
+F5 | Whirlpool Washer | https://alonsoalviraa.github.io/pseo-fixhub/98/error-f5-whirlpool-washer.html
+E3 | Bosch Dishwasher | https://alonsoalviraa.github.io/pseo-fixhub/78/error-e3-bosch-dishwasher.html
+E15 | Bosch Dishwasher | https://alonsoalviraa.github.io/pseo-fixhub/07/error-e15-bosch-dishwasher.html
+F9/F1 | Maytag Washer | https://alonsoalviraa.github.io/pseo-fixhub/24/error-f9-f1-maytag-washer.html
+LE | Samsung Washer | https://alonsoalviraa.github.io/pseo-fixhub/25/error-le-samsung-washer.html
+IE | LG Dishwasher | https://alonsoalviraa.github.io/pseo-fixhub/50/error-ie-lg-dishwasher.html
+HE1 | Samsung Dryer | https://alonsoalviraa.github.io/pseo-fixhub/d3/error-he1-samsung-dryer.html
+D80 | Whirlpool Dryer | https://alonsoalviraa.github.io/pseo-fixhub/72/error-d80-whirlpool-dryer.html
+F70 | Kenmore Dryer | https://alonsoalviraa.github.io/pseo-fixhub/48/error-f70-kenmore-dryer.html
+PE | LG Dryer | https://alonsoalviraa.github.io/pseo-fixhub/1e/error-pe-lg-dryer.html
+DE | Samsung Dryer | https://alonsoalviraa.github.io/pseo-fixhub/f7/error-de-samsung-dryer.html
+E1/F9 | Whirlpool Dishwasher | https://alonsoalviraa.github.io/pseo-fixhub/09/error-e1-f9-whirlpool-dishwasher.html
+i20 | GE Dishwasher | https://alonsoalviraa.github.io/pseo-fixhub/39/error-i20-ge-dishwasher.html
+H20 | KitchenAid Dishwasher | https://alonsoalviraa.github.io/pseo-fixhub/d2/error-h20-kitchenaid-dishwasher.html
+tE | Samsung Washer | https://alonsoalviraa.github.io/pseo-fixhub/86/error-te-samsung-washer.html
+SUD | Whirlpool Washer | https://alonsoalviraa.github.io/pseo-fixhub/d5/error-sud-whirlpool-washer.html
+CL | LG Washer | https://alonsoalviraa.github.io/pseo-fixhub/36/error-cl-lg-washer.html
+PF | GE Washer | https://alonsoalviraa.github.io/pseo-fixhub/3f/error-pf-ge-washer.html
+F2/E1 | Maytag Oven | https://alonsoalviraa.github.io/pseo-fixhub/9a/error-f2-e1-maytag-oven.html
+F10 | GE Oven | https://alonsoalviraa.github.io/pseo-fixhub/fc/error-f10-ge-oven.html
+LOC | Whirlpool Oven | https://alonsoalviraa.github.io/pseo-fixhub/5f/error-loc-whirlpool-oven.html

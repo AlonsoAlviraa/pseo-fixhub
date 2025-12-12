@@ -3,6 +3,7 @@ import json
 import datetime
 import hashlib
 import random
+from collections import defaultdict
 from jinja2 import Environment, FileSystemLoader
 
 # ========================================
@@ -12,6 +13,8 @@ DATA_FILE = 'data/dataset.json'
 TEMPLATE_DIR = 'templates'
 OUTPUT_DIR = 'output'
 BASE_URL = 'https://alonsoalviraa.github.io/pseo-fixhub'
+GA_MEASUREMENT_ID = os.getenv('GA_MEASUREMENT_ID', '').strip()
+BUILD_SEED = int(os.getenv('BUILD_SEED', '42'))
 
 # 🔥 CHINA TECH OPTIMIZATION FLAGS
 USE_PAGINATION_HASHING = True  # Distribute files across subdirectories
@@ -39,6 +42,204 @@ DESCRIPTION_VARIANTS = [
     "How to solve error {code} on {brand} {device}. Cost range: {cost}.",
     "Expert repair guide for {brand} {device} error {code}. Price: {cost}."
 ]
+
+# ========================================
+# CONTENT ENRICHMENT HELPERS
+# ========================================
+def infer_symptoms(item):
+    """Heuristic-based symptom hints to provide richer context."""
+    device = item.get('device_type', '').lower()
+    error = item.get('error_code', '').upper()
+    hints = [
+        f"Intermittent performance or repeated code {error} after a reset",
+        "Cycles stopping unexpectedly before completion",
+        "Unusual noises or vibrations during operation"
+    ]
+
+    keywords = ' '.join(item.get('fix_steps', [])).lower()
+    if 'drain' in keywords or 'pump' in keywords:
+        hints.append("Water remaining in the tub or slow draining after a cycle")
+    if 'filter' in keywords:
+        hints.append("Visible debris or lint accumulation around service panels")
+    if 'sensor' in keywords or 'thermistor' in keywords:
+        hints.append("Inconsistent temperature readings or heat cycles")
+    if 'door' in keywords or 'latch' in keywords:
+        hints.append("Door will not lock or unlock cleanly before starting")
+    if 'hose' in keywords:
+        hints.append("Moisture around hose connections or kinks along the line")
+    if device in ('washer', 'dishwasher'):
+        hints.append("Persistent odor from standing water between washes")
+
+    return hints
+
+
+def infer_causes(item):
+    """Map common error surfaces to possible root causes."""
+    causes = [
+        "Temporary glitch cleared by a full power cycle",
+        "Blocked air or water pathways reducing flow efficiency",
+        "Loose connectors or aging components that need reseating"
+    ]
+
+    keywords = ' '.join(item.get('fix_steps', [])).lower()
+    if 'drain' in keywords:
+        causes.append("Drain pump struggling because of clogs or kinked hoses")
+    if 'filter' in keywords:
+        causes.append("Maintenance overdue on intake or debris filters")
+    if 'sensor' in keywords:
+        causes.append("Misreadings from moisture or temperature sensors")
+    if 'vent' in keywords or 'exhaust' in keywords:
+        causes.append("Restricted ventilation leading to overheating")
+    if 'reset' in keywords:
+        causes.append("Firmware protection triggered after repeated failed cycles")
+
+    return causes
+
+
+def recommend_toolkit(device_type):
+    """Return a short list of tools suitable for the appliance type."""
+    device = (device_type or '').lower()
+    base = [
+        "Phillips and flathead screwdrivers",
+        "Microfiber towels for cleanup",
+        "Smartphone flashlight or headlamp"
+    ]
+
+    if device in ('washer', 'dishwasher'):
+        base.extend([
+            "Bucket or shallow pan for capturing residual water",
+            "Needle-nose pliers for clamps and hoses"
+        ])
+    if device in ('dryer', 'oven'):
+        base.append("Vacuum with hose attachment for lint or debris")
+    if device:
+        base.append(f"Replacement parts specific to your {device_type.lower()} model")
+    return base
+
+
+def expand_fix_steps(fix_steps):
+    """Transform terse fix steps into explanatory paragraphs."""
+    expanded = []
+    for idx, step in enumerate(fix_steps, start=1):
+        lower = step.lower()
+        detail = step
+        if 'unplug' in lower or 'power' in lower:
+            detail += " This fully discharges the control board and prevents accidental shorts while you inspect the unit."
+        elif 'hose' in lower or 'drain' in lower:
+            detail += " Clearing hoses and drain paths restores proper water flow and removes the most common cause of this code."
+        elif 'filter' in lower:
+            detail += " A clogged filter restricts circulation; rinsing it under running water often clears the code immediately."
+        elif 'reset' in lower or 'restart' in lower:
+            detail += " After hardware checks, a clean restart lets the appliance reinitialize sensors and run a self-test."
+        else:
+            detail += " Take a moment to confirm the step is completed before moving forward to avoid repeating diagnostics."
+        expanded.append({
+            'title': f"Step {idx}",
+            'body': detail
+        })
+    return expanded
+
+
+def maintenance_tips(item):
+    """Provide ongoing prevention ideas derived from the data."""
+    tips = [
+        "Log the date of this repair so you can identify recurring patterns over time.",
+        "Run a quick rinse or empty cycle monthly to keep sensors clean.",
+        "Inspect power cords and hoses for visible wear whenever you move the appliance."
+    ]
+
+    if 'filter' in ' '.join(item.get('fix_steps', [])).lower():
+        tips.append("Add a calendar reminder to clean intake and drain filters every 30 days.")
+    if item.get('device_type', '').lower() == 'dryer':
+        tips.append("Clear lint from vents and ducts at least once per season to maintain airflow.")
+    return tips
+
+
+def estimate_time_required(fix_steps, severity):
+    """Return a friendly repair time window based on steps and severity."""
+    base_minutes = max(20, len(fix_steps) * 12)
+    severity = (severity or '').lower()
+    if severity == 'high':
+        base_minutes += 25
+    elif severity == 'medium':
+        base_minutes += 10
+    # Express as a range to stay realistic
+    return f"{base_minutes}-{base_minutes + 20} minutes"
+
+
+def classify_difficulty(severity):
+    """Map severity into a consumer-friendly difficulty label."""
+    severity = (severity or '').lower()
+    if severity == 'low':
+        return "Easy (DIY-friendly)"
+    if severity == 'medium':
+        return "Moderate"
+    return "Advanced — consider a pro"
+
+
+def recommend_parts(item):
+    """Infer likely replacement parts users may need to order."""
+    suggestions = []
+    steps_text = ' '.join(item.get('fix_steps', [])).lower()
+    device = (item.get('device_type') or '').lower()
+
+    if 'hose' in steps_text:
+        suggestions.append("OEM drain or inlet hose kit")
+    if 'filter' in steps_text:
+        suggestions.append("Lint/debris filter compatible with your model")
+    if 'pump' in steps_text:
+        suggestions.append("Circulation or drain pump assembly")
+    if 'sensor' in steps_text or 'thermistor' in steps_text:
+        suggestions.append("Replacement sensor/thermistor with harness")
+    if 'valve' in steps_text:
+        suggestions.append("Water inlet valve")
+    if 'seal' in steps_text or 'gasket' in steps_text:
+        suggestions.append("Door gasket or sealant kit")
+
+    if device == 'dryer':
+        suggestions.append("High-temp vent duct and clamps")
+    elif device == 'dishwasher':
+        suggestions.append("Dishwasher-safe descaler or cleaning tablets")
+
+    return suggestions or ["No parts typically required—start with cleaning and resets."]
+
+
+def diagnostic_checks(item):
+    """Provide simple checks to validate the issue before repairing."""
+    checks = [
+        "Power-cycle the appliance for 5 minutes to clear transient faults.",
+        "Verify the unit is level and stable to reduce vibration-related codes.",
+    ]
+
+    steps_text = ' '.join(item.get('fix_steps', [])).lower()
+    if 'drain' in steps_text or 'hose' in steps_text:
+        checks.append("Run a short cycle and listen for the drain pump; note any unusual noises.")
+    if 'filter' in steps_text:
+        checks.append("Inspect filters for debris under running water until flow is clear.")
+    if 'sensor' in steps_text:
+        checks.append("Check sensor connectors for corrosion or loose pins.")
+    if 'door' in steps_text or 'latch' in steps_text:
+        checks.append("Open/close the door three times to confirm the latch engages cleanly.")
+
+    return checks
+
+
+def build_enriched_payload(item):
+    """Combine the raw item with derived, richer content fields."""
+    return {
+        **item,
+        'symptoms': infer_symptoms(item),
+        'causes': infer_causes(item),
+        'toolkit': recommend_toolkit(item.get('device_type')),
+        'expanded_steps': expand_fix_steps(item.get('fix_steps', [])),
+        'maintenance_tips': maintenance_tips(item),
+        'safety_note': "Disconnect power and water supplies before opening panels. Keep floors dry to prevent slips.",
+        'pro_help': "If the error returns after completing these steps twice, contact a certified technician to check the control board, pump, and wiring harness.",
+        'time_required': estimate_time_required(item.get('fix_steps', []), item.get('severity')),
+        'difficulty': classify_difficulty(item.get('severity')),
+        'recommended_parts': recommend_parts(item),
+        'diagnostic_checks': diagnostic_checks(item),
+    }
 
 # ========================================
 # HELPER FUNCTIONS
@@ -102,8 +303,8 @@ def generate_pages(data, env):
     total_items = len(data)
     generated_count = 0
     
-    # Pre-cache all slugs for random linking (Spider Mesh)
-    all_slugs = [item.get('slug', f"page-{i}") for i, item in enumerate(data)]
+    # Track files per hashed directory for optional directory index generation
+    subdir_pages = defaultdict(list)
     
     for index, item in enumerate(data):
         slug = item.get('slug', f"page-{index}")
@@ -114,6 +315,7 @@ def generate_pages(data, env):
         hash_path = get_hash_path(slug)
         
         # Create subdirectory if using hashing
+        subdir = ''
         if USE_PAGINATION_HASHING:
             subdir = os.path.dirname(hash_path)
             full_subdir = os.path.join(OUTPUT_DIR, subdir)
@@ -190,20 +392,54 @@ def generate_pages(data, env):
         # RENDER THE PAGE
         # ========================================
         print(f"[{generated_count+1}/{total_items}] Generating {filename}...")
-        
+
+        enriched_item = build_enriched_payload(item)
+
         html_content = template.render(
-            item=item,
+            item=enriched_item,
             related_pages=related_pages,
             now=datetime.datetime.now(),
             custom_title=custom_title,
-            custom_description=custom_description
+            custom_description=custom_description,
+            analytics_id=GA_MEASUREMENT_ID,
         )
-        
+
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(html_content)
-            
+
+        if USE_PAGINATION_HASHING and subdir:
+            subdir_pages[subdir].append(os.path.basename(filename))
+
         generated_count += 1
-        
+
+    # Generate lightweight index.html files per hashed directory to prevent 404s
+    # when users manually browse to /<hash>/ or /<hash>/index.html.
+    if USE_PAGINATION_HASHING:
+        for subdir, pages in subdir_pages.items():
+            index_path = os.path.join(OUTPUT_DIR, subdir, 'index.html')
+            # Redirect to the first page in the bucket and include a simple fallback list.
+            redirect_target = pages[0]
+            link_list = '\n'.join([f"        <li><a href=\"{p}\">{p}</a></li>" for p in pages])
+
+            index_html = f"""<!doctype html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"utf-8\">
+  <meta http-equiv=\"refresh\" content=\"0; url={redirect_target}\">
+  <title>Redirecting...</title>
+</head>
+<body>
+  <p>If you are not redirected, open the guide here: <a href=\"{redirect_target}\">{redirect_target}</a>.</p>
+  <ul>
+{link_list}
+  </ul>
+</body>
+</html>
+"""
+
+            with open(index_path, 'w', encoding='utf-8') as index_file:
+                index_file.write(index_html)
+
     return generated_count
 
 def generate_sitemap(data):
@@ -287,6 +523,29 @@ Allow: /
     print(f"[OK] Generated robots.txt")
 
 
+def write_page_manifest(data):
+    """Create a human-readable list of generated pages for manual QA."""
+    manifest_path = os.path.join(OUTPUT_DIR, 'pages_manifest.txt')
+    header = [
+        "# FixHub page manifest (generated)",
+        f"# Base URL: {BASE_URL}",
+        "# Format: <error_code> | <brand device_type> | <url>",
+        "",
+    ]
+
+    lines = []
+    for item in data:
+        slug = item.get('slug')
+        label = f"{item.get('device_brand')} {item.get('device_type')}".strip()
+        hash_path = get_hash_path(slug)
+        url = f"{BASE_URL}/{hash_path}.html".replace('\\', '/')
+        lines.append(f"{item.get('error_code')} | {label} | {url}")
+
+    with open(manifest_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(header + lines))
+    print(f"[OK] Wrote page manifest with {len(lines)} entries to {manifest_path}")
+
+
 def main():
     print("=" * 60)
     print(">>> pSEO CHINA TECH FACTORY - STARTING BUILD")
@@ -303,11 +562,14 @@ def main():
     
     env = setup_environment()
     
+    random.seed(BUILD_SEED)
+
     count = generate_pages(data, env)
     print(f"\n[OK] Successfully generated {count} pages.")
-    
+
     generate_sitemap(data)
     generate_robots()
+    write_page_manifest(data)
     print("=" * 60)
     print(">>> BUILD COMPLETE <<<")
     print("=" * 60)

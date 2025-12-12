@@ -11,7 +11,9 @@ from jinja2 import Environment, FileSystemLoader
 DATA_FILE = 'data/dataset.json'
 TEMPLATE_DIR = 'templates'
 OUTPUT_DIR = 'output'
-BASE_URL = 'https://your-project.vercel.app'
+BASE_URL = os.getenv('BASE_URL', 'https://alonsoalviraa.github.io/pseo-fixhub').strip()
+BRANDS_HASH_ROOT = __import__('hashlib').md5('brands'.encode('utf-8')).hexdigest()[:2]
+GA_MEASUREMENT_ID = os.getenv('GA_MEASUREMENT_ID', '').strip()
 
 def load_data():
     """Load the dataset from JSON."""
@@ -25,78 +27,133 @@ def get_hash_path(slug):
     hash_prefix = hash_obj.hexdigest()[:2]
     return os.path.join(hash_prefix, slug)
 
+
+def slugify(value: str) -> str:
+    return ''.join(ch.lower() if ch.isalnum() else '-' for ch in value).strip('-')
+
 def generate_index():
     """Generate index.html with all pages listed."""
     data = load_data()
-    
+
     # Group by device type
     by_device = {}
+    by_brand = {}
     for item in data:
         device_type = item.get('device_type', 'Other')
         if device_type not in by_device:
             by_device[device_type] = []
-        
+
+        brand = item.get('device_brand', 'Other')
+        if brand not in by_brand:
+            by_brand[brand] = {
+                'slug': slugify(brand),
+                'count': 0,
+                'devices': set(),
+            }
+
         slug = item.get('slug')
         hash_path = get_hash_path(slug).replace('\\', '/')
-        
+
         by_device[device_type].append({
             'error_code': item.get('error_code'),
             'device_brand': item.get('device_brand'),
             'device_type': device_type,
             'severity': item.get('severity'),
-            'url': f"{hash_path}.html"
+            'url': f"{BASE_URL}/{hash_path}.html".replace('\\', '/')
         })
+
+        by_brand[brand]['count'] += 1
+        by_brand[brand]['devices'].add(device_type)
     
-    # Generate HTML manually (simple template)
-    html = """<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FixHub - Automated Repair Knowledge Base</title>
-    <meta name="description" content="Complete database of error codes and repair guides for appliances. 100% automated, always up-to-date.">
-    <script src="https://cdn.tailwindcss.com"></script>
+    analytics_snippet = ""
+    if GA_MEASUREMENT_ID:
+        analytics_snippet = f"""
+    <!-- Google Analytics -->
+    <script async src=\"https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}\"></script>
     <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-              colors: {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){{dataLayer.push(arguments);}}
+        gtag('js', new Date());
+        gtag('config', '{GA_MEASUREMENT_ID}');
+    </script>
+        """
+
+    # Generate HTML manually (simple template)
+    html = f"""<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>FixHub - Automated Repair Knowledge Base</title>
+    <meta name=\"description\" content=\"Complete database of error codes and repair guides for appliances. 100% automated, always up-to-date.\">
+    <script src=\"https://cdn.tailwindcss.com\"></script>
+    <script>
+        tailwind.config = {{
+          theme: {{
+            extend: {{
+              colors: {{
                 primary: '#0f172a',
                 accent: '#38bdf8',
-              }
-            }
-          }
-        }
+              }}
+            }}
+          }}
+        }}
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .glass-panel {
+        body {{ font-family: 'Inter', sans-serif; }}
+        .glass-panel {{
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-        }
+        }}
     </style>
-</head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-    
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-10">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="index.html" class="font-bold text-2xl text-slate-800">Fix<span class="text-accent">Hub</span></a>
-            <div class="text-sm text-slate-500">The Automated Repair Knowledge Base</div>
+{analytics_snippet}
+  </head>
+<body class=\"bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen\">
+
+    <nav class=\"bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-10\">
+        <div class=\"max-w-6xl mx-auto px-4 py-4 flex justify-between items-center\">
+            <a href=\"index.html\" class=\"font-bold text-2xl text-slate-800\">Fix<span class=\"text-accent\">Hub</span></a>
+            <div class=\"text-sm text-slate-500\">The Automated Repair Knowledge Base</div>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto px-4 py-12">
-        
-        <header class="text-center mb-16">
-            <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 mb-4">
-                Fix Any <span class="text-accent">Error Code</span>
+    <main class=\"max-w-6xl mx-auto px-4 py-12\">
+
+        <header class=\"text-center mb-16\">
+            <h1 class=\"text-5xl md:text-6xl font-extrabold text-slate-900 mb-4\">
+                Fix Any <span class=\"text-accent\">Error Code</span>
             </h1>
-            <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-                Automated repair guides for """ + str(len(data)) + """ common appliance errors.
+            <p class=\"text-xl text-slate-600 max-w-2xl mx-auto\">
+                Automated repair guides for {len(data)} common appliance errors.
                 100% free, always updated.
             </p>
         </header>
+
+        <section class=\"mb-12\">
+            <h2 class=\"text-3xl font-bold text-slate-800 mb-4 flex items-center\">
+                <span class=\"w-2 h-8 bg-accent mr-3 rounded\"></span>
+                Browse by brand
+            </h2>
+            <div class=\"grid md:grid-cols-2 lg:grid-cols-3 gap-4\">
+"""
+
+    for brand, meta in sorted(by_brand.items()):
+        hub_url = f"{BASE_URL}/{BRANDS_HASH_ROOT}/brands/{meta['slug']}/"
+        devices = ', '.join(sorted(meta['devices']))
+        html += f"""
+                <a href=\"{hub_url}\" class=\"glass-panel p-6 rounded-xl hover:shadow-lg transition-all hover:-translate-y-1 block\">
+                    <div class=\"flex justify-between items-start mb-3\">
+                        <span class=\"text-2xl font-bold text-accent\">{brand}</span>
+                        <span class=\"text-xs px-2 py-1 rounded-full bg-slate-900 text-white\">{meta['count']} guides</span>
+                    </div>
+                    <p class=\"text-sm text-slate-500\">Devices: {devices}</p>
+                </a>
+"""
+
+    html += """
+            </div>
+        </section>
 
 """
     
@@ -156,7 +213,7 @@ def generate_index():
         f.write(html)
     
     print(f"[OK] Generated index.html with {len(data)} repair guides")
-    print(f"     Grouped into {len(by_device)} device categories")
+    print(f"     Grouped into {len(by_device)} device categories and {len(by_brand)} brand hubs")
 
 if __name__ == "__main__":
     print("=" * 60)

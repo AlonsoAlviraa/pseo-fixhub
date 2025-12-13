@@ -67,6 +67,16 @@ pip install -r requirements.txt
 python build.py
 ```
 
+### 3. Generar portada y hubs de marca
+```bash
+python generate_index.py
+```
+
+### 4. Generar playbook de backlinks
+```bash
+python generate_backlinks_plan.py
+```
+
 ### 3. Resultado
 ```
 ============================================================
@@ -200,6 +210,8 @@ Cada registro debe tener esta estructura:
 ---
 
 ## 🚀 Deployment
+
+> Estado actualizado en `docs/DEPLOY_STATUS.md` (incluye comandos de build/test y gaps abiertos).
 
 ### Vercel (Recomendado para estáticos)
 ```bash

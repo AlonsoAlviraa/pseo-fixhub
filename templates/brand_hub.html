@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ brand }} Appliance Error Codes & Fixes{% endblock %}
+{% block description %}Browse all {{ brand }} appliance error code guides with severity, device type, and direct fixes.{% endblock %}
+{% block content %}
+<section class="space-y-8">
+  <header class="glass-panel rounded-2xl p-8 shadow-sm">
+    <p class="uppercase text-xs font-semibold tracking-widest text-accent">Brand hub</p>
+    <h1 class="text-4xl font-extrabold text-slate-900 mt-2">{{ brand }} repair codes</h1>
+    <p class="text-slate-600 mt-3">Curated collection of {{ total }} DIY-friendly guides for {{ brand }} appliances. Each card links to a full walkthrough with safety, diagnostic, and prevention steps.</p>
+  </header>
+
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for entry in entries %}
+      <a href="{{ entry.url }}" class="glass-panel p-5 rounded-xl hover:shadow-lg transition-all hover:-translate-y-1 block">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-2xl font-bold text-accent">{{ entry.error_code }}</span>
+          <span class="text-xs px-2 py-1 rounded-full {{ 'bg-red-100 text-red-700' if entry.severity=='High' else 'bg-amber-100 text-amber-700' if entry.severity=='Medium' else 'bg-green-100 text-green-700' }}">{{ entry.severity }}</span>
+        </div>
+        <h3 class="font-semibold text-slate-800">{{ brand }} {{ entry.device_type }}</h3>
+        <p class="text-sm text-slate-500">Open detailed steps →</p>
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="glass-panel p-6 rounded-2xl border border-dashed border-slate-200">
+    <h2 class="text-xl font-bold text-slate-900 mb-2">Need more? </h2>
+    <p class="text-slate-600">Check all appliance types from the home page or request a new guide via GitHub Issues. Brand hubs mirror Hugo-style bundles for faster crawling and better topical relevance.</p>
+    <a href="{{ base_url | default('index.html') }}" class="inline-flex items-center mt-3 text-accent font-semibold">Back to all guides →</a>
+  </div>
+</section>
+{% endblock %}
